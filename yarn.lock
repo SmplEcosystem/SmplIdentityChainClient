@@ -1864,10 +1864,10 @@
     "@sigstore/core" "^0.2.0"
     "@sigstore/protobuf-specs" "^0.2.1"
 
-"@smplecosystem/smpl-identity-core@0.0.1":
-  version "0.0.1"
-  resolved "https://npm.pkg.github.com/download/@smplecosystem/smpl-identity-core/0.0.1/83c83ab9c673dcebf6992c8f3a865e613f029146#83c83ab9c673dcebf6992c8f3a865e613f029146"
-  integrity sha512-hWbrjm5yw2cOFVM9STa+d9tSz+sdA/SChAXV3H3L93wUZjEy6n/vWdf6MeBoOBESHasnFAK6MpNJqgw/3GlUnw==
+"@smplecosystem/smpl-identity-core@0.0.3":
+  version "0.0.3"
+  resolved "https://npm.pkg.github.com/download/@smplecosystem/smpl-identity-core/0.0.3/b964d93dd77e30f6775e02ff389522f2848d59eb#b964d93dd77e30f6775e02ff389522f2848d59eb"
+  integrity sha512-aMQr/CAxLWGwiKV9pECjXH9QnpHyV/lWnwoRjoftRpRmgXdApnZxSLnNUmcVWTdmM4GS6qMDPM/zhaViuFPkYw==
   dependencies:
     "@cosmjs/proto-signing" "0.32.2"
     "@cosmjs/stargate" "0.32.2"
