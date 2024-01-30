@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Client} from '@smplecosystem/smpl-identity-core';
 import {AccountData, DirectSecp256k1HdWallet} from "@cosmjs/proto-signing";
-import {IgniteClient} from "@smplecosystem/smpl-identity-core/lib/client";
+import * as secp256k1 from 'secp256k1';
+import CryptoJS from 'crypto-js';
+// import crypto from 'crypto-browserify';
 
 @Injectable({
   providedIn: 'root'
