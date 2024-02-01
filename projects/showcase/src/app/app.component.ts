@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.smplIdentityClientService.sign()
   }
 
   async getBalances() {
