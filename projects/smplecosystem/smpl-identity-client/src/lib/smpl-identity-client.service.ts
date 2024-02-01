@@ -1,9 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Client} from '@smplecosystem/smpl-identity-core';
 import {AccountData, DirectSecp256k1HdWallet} from "@cosmjs/proto-signing";
-import * as secp256k1 from 'secp256k1';
-import CryptoJS from 'crypto-js';
-// import crypto from 'crypto-browserify';
+import {
+  Bip39,
+  EnglishMnemonic,
+  Random,
+  Secp256k1,
+  sha256,
+} from "@cosmjs/crypto";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +15,10 @@ import CryptoJS from 'crypto-js';
 export class SmplIdentityClientService {
   client?: any;
   wallet?: DirectSecp256k1HdWallet;
+  didDocument = {
+    id: 'billy',
+    verificationMethods: [{}]
+  }
 
   constructor() {
     this.init()
@@ -48,14 +56,7 @@ export class SmplIdentityClientService {
     const result = await this.client?.SmplidentitychainDid.tx.sendMsgUpsertDid({
       value: {
         creator: accountData[0].address,
-        didDocument: {
-          id: 'billy',
-          verificationMethods: [
-            {
-
-            }
-          ]
-        },
+        didDocument: this.didDocument,
         didDocumentMetadata: {},
         signature: 'billy'
       },
@@ -74,5 +75,22 @@ export class SmplIdentityClientService {
 
   searchDid() {
     return this.client.SmplidentitychainDid.query.queryResolveDidRequest('billy');
+  }
+
+  async generateKeys() {
+    const m = Bip39.encode(Random.getBytes(24)).toString();
+    const seed = await Bip39.mnemonicToSeed(new EnglishMnemonic(m));
+    return await Secp256k1.makeKeypair(sha256(seed));
+  }
+
+  async sign() {
+    // const wallet = await DirectSecp256k1HdWallet.generate(24);
+    const didDocumentString = JSON.stringify(this.didDocument);
+    const didDocumentBuffer = Buffer.from(didDocumentString, 'utf-8');
+    const didDocumentBiteArray = new Uint8Array(didDocumentBuffer);
+    const didDocumentHash = sha256(didDocumentBiteArray);
+    const keys = await this.generateKeys()
+    const signature = await Secp256k1.createSignature(didDocumentHash, keys.privkey)
+    console.log('signature', signature)
   }
 }
