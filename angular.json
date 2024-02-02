@@ -30,7 +30,8 @@
             "tsConfig": "projects/smplecosystem/smpl-identity-client/tsconfig.spec.json",
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "projects/showcase/src/polyfills.ts"
             ]
           }
         }
@@ -54,7 +55,8 @@
             "index": "projects/showcase/src/index.html",
             "browser": "projects/showcase/src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "projects/showcase/src/polyfills.ts"
             ],
             "tsConfig": "projects/showcase/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -119,7 +121,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "projects/showcase/src/polyfills.ts"
             ],
             "tsConfig": "projects/showcase/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",

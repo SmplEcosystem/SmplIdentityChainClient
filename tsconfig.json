@@ -5,6 +5,9 @@
     "paths": {
       "@smplecosystem/smpl-identity-client": [
         "./dist/smplecosystem/smpl-identity-client"
+      ],
+      "crypto": [
+        "./node_modules/crypto-browserify"
       ]
     },
     "outDir": "./dist/out-tsc",

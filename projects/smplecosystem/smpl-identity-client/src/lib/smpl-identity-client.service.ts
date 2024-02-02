@@ -1,13 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Client} from '@smplecosystem/smpl-identity-core';
 import {AccountData, DirectSecp256k1HdWallet} from "@cosmjs/proto-signing";
-import {
-  Bip39,
-  EnglishMnemonic,
-  Random,
-  Secp256k1,
-  sha256,
-} from "@cosmjs/crypto";
+import {Bip39, EnglishMnemonic, Random, Secp256k1, sha256,} from "@cosmjs/crypto";
+import bs58 from 'bs58';
+
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +32,7 @@ export class SmplIdentityClientService {
       this.wallet
     );
 
+
     // c.CosmosBankV1Beta1.query.queryAllBalances()
     // c.SmplidentitychainDid.query.queryResolveDidRequest('billy');
 
@@ -55,10 +52,8 @@ export class SmplIdentityClientService {
 
     const result = await this.client?.SmplidentitychainDid.tx.sendMsgUpsertDid({
       value: {
-        creator: accountData[0].address,
         didDocument: this.didDocument,
         didDocumentMetadata: {},
-        signature: 'billy'
       },
       fee: {
         amount: [{amount: '0', denom: 'stake'}],
@@ -89,8 +84,22 @@ export class SmplIdentityClientService {
     const didDocumentBuffer = Buffer.from(didDocumentString, 'utf-8');
     const didDocumentBiteArray = new Uint8Array(didDocumentBuffer);
     const didDocumentHash = sha256(didDocumentBiteArray);
+
     const keys = await this.generateKeys()
     const signature = await Secp256k1.createSignature(didDocumentHash, keys.privkey)
+
+
     console.log('signature', signature)
+
+    const verified = await Secp256k1.verifySignature(signature, didDocumentHash, keys.pubkey);
+
+    console.log('verified', verified)
+
+    const p = bs58.encode(Buffer.from(keys.pubkey))
+    const pr = bs58.encode(Buffer.from(keys.privkey))
+
+    console.log('bs58 pubkey', p)
+    console.log('bs58 privkey', pr)
+
   }
 }
