@@ -11,10 +11,6 @@ import bs58 from 'bs58';
 export class SmplIdentityClientService {
   client?: any;
   wallet?: DirectSecp256k1HdWallet;
-  didDocument = {
-    id: 'billy',
-    verificationMethods: [{}]
-  }
 
   constructor() {
     this.init()
@@ -22,7 +18,7 @@ export class SmplIdentityClientService {
   }
 
   async init() {
-    const mnemonic: string = 'crisp property humor budget flag outer spin write crouch check front deposit speak filter mechanic chunk stairs ancient catch zero kite initial during much'
+    const mnemonic: string = 'wrist argue hammer pumpkin avoid illegal occur celery impose outside insane mammal crouch flavor robot inner top forest mystery detail fox fire nephew shell'
     this.wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
     const c = new Client({
         apiURL: "http://localhost:1317",
@@ -37,6 +33,7 @@ export class SmplIdentityClientService {
     // c.SmplidentitychainDid.query.queryResolveDidRequest('billy');
 
     this.client = c;
+    // c.SmplidentitychainDid.tx.sendMsgUpsertDid()
   }
 
   async getBalance() {
@@ -45,15 +42,34 @@ export class SmplIdentityClientService {
     return this.client?.CosmosBankV1Beta1.query.queryAllBalances(accountData[0].address);
   }
 
+  async generateDidDocument() {
+    const keys = await this.generateKeys()
+    const b58PublicKey = bs58.encode(keys.pubkey)
+    return {
+      id: 'did:smpl:12234',
+      verificationMethods: [
+        {
+          id: "did:smpl:12234#key1",
+          type: "Ed25519VerificationKey2018",
+          controller: "did:example:123",
+          publicKeyBase58: b58PublicKey
+        }
+      ]
+    }
+  }
+
   async broadcastTransaction() {
 
     const accountData: readonly AccountData[] | undefined = await this.wallet?.getAccounts();
     if (!accountData) return;
+    const signature = await this.sign()
 
     const result = await this.client?.SmplidentitychainDid.tx.sendMsgUpsertDid({
       value: {
-        didDocument: this.didDocument,
+        creator: '',
+        didDocument: await this.generateDidDocument(),
         didDocumentMetadata: {},
+        signature: signature.toFixedLength()
       },
       fee: {
         amount: [{amount: '0', denom: 'stake'}],
@@ -80,26 +96,22 @@ export class SmplIdentityClientService {
 
   async sign() {
     // const wallet = await DirectSecp256k1HdWallet.generate(24);
-    const didDocumentString = JSON.stringify(this.didDocument);
+    const didDocumentString = JSON.stringify(this.generateDidDocument());
     const didDocumentBuffer = Buffer.from(didDocumentString, 'utf-8');
     const didDocumentBiteArray = new Uint8Array(didDocumentBuffer);
     const didDocumentHash = sha256(didDocumentBiteArray);
 
     const keys = await this.generateKeys()
-    const signature = await Secp256k1.createSignature(didDocumentHash, keys.privkey)
+    return await Secp256k1.createSignature(didDocumentHash, keys.privkey)
 
 
-    console.log('signature', signature)
-
-    const verified = await Secp256k1.verifySignature(signature, didDocumentHash, keys.pubkey);
-
-    console.log('verified', verified)
-
-    const p = bs58.encode(Buffer.from(keys.pubkey))
-    const pr = bs58.encode(Buffer.from(keys.privkey))
-
-    console.log('bs58 pubkey', p)
-    console.log('bs58 privkey', pr)
+    // console.log('signature', signature)
+    // const verified = await Secp256k1.verifySignature(signature, didDocumentHash, keys.pubkey);
+    // console.log('verified', verified)
+    // const p = bs58.encode(Buffer.from(keys.pubkey))
+    // const pr = bs58.encode(Buffer.from(keys.privkey))
+    // console.log('bs58 pubkey', p)
+    // console.log('bs58 privkey', pr)
 
   }
 }
